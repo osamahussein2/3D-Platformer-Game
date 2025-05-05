@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "ResourceManager.h"
 
 Window* Window::windowInstance = nullptr;
 
@@ -8,6 +9,8 @@ Window::Window() : openGLwindow(NULL)
 
 Window::~Window()
 {
+    ResourceManager::Clear();
+
     // Close GLFW window
     glfwTerminate();
 }
@@ -49,6 +52,8 @@ void Window::InitializeWindow(int width, int height, const char* title, GLFWmoni
 
     glfwSetKeyCallback(openGLwindow, KeyCallback);
     glfwSetFramebufferSizeCallback(openGLwindow, FrameBufferSizeCallback);
+
+    ResourceManager::LoadShader("Shaders/Texture.vert", "Shaders/Texture.frag", texture);
 }
 
 void Window::UpdateWindow()

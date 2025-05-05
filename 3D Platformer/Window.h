@@ -35,6 +35,11 @@ private:
     static Window* windowInstance;
 
     GLFWwindow* openGLwindow;
+
+    enum ShaderMaps
+    {
+        texture,
+    };
 };
 
 #endif
