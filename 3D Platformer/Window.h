@@ -8,6 +8,12 @@
 
 using namespace std;
 
+enum GameState
+{
+    mainMenu,
+    game
+};
+
 class Window
 {
 public:
@@ -19,6 +25,13 @@ public:
     void InitializeWindow(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share);
 
     void UpdateWindow();
+
+    // positionX and positionY represent as current mouse positions, along the x and y axes respectively
+    static void MouseCallback(GLFWwindow* window, double positionX, double positionY);
+
+    GameState state;
+
+    bool areResourcesDeallocated;
 
 private:
     // Initialize the window's variables to be NULL first before we do anything with it
@@ -36,10 +49,7 @@ private:
 
     GLFWwindow* openGLwindow;
 
-    enum ShaderMaps
-    {
-        texture,
-    };
+    static float lastPositionX, lastPositionY;
 };
 
 #endif

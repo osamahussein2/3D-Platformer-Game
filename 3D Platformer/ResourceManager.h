@@ -1,6 +1,3 @@
-#ifndef RESOURCE_MANAGER_H
-#define RESOURCE_MANAGER_H
-
 #include <map>
 #include <string>
 
@@ -32,4 +29,3 @@ private:
     ResourceManager() { }
 };
 
-#endif //RESOURCE_MANAGER_H

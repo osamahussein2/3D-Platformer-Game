@@ -152,20 +152,39 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\GameDev\GLAD OpenGL 4.6\src\glad.c" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameGround.cpp" />
+    <ClCompile Include="GamePlayer.cpp" />
+    <ClCompile Include="House.cpp" />
+    <ClCompile Include="PlayerCube.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="GameGround.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GamePlayer.h" />
+    <ClInclude Include="House.h" />
+    <ClInclude Include="PlayerCube.h" />
     <ClInclude Include="Engine.h" />
+    <ClInclude Include="MainMenu.h" />
+    <ClInclude Include="MainMenuObject.h" />
+    <ClInclude Include="Menu.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="InvertedTexture.frag" />
+    <None Include="InvertedTexture.vert" />
     <None Include="Shaders\Texture.frag" />
     <None Include="Shaders\Texture.vert" />
   </ItemGroup>

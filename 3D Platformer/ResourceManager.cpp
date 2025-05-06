@@ -1,8 +1,4 @@
 #include "ResourceManager.h"
-#include "Engine.h"
-
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
 
 // Instantiate static variables
 map<int, Shader> ResourceManager::shaders;
