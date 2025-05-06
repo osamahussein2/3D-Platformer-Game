@@ -44,6 +44,11 @@ void Game::InitializeGame()
 	Camera::cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	Camera::cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
+	if (Camera::cameraPosition.y <= -1.3f)
+	{
+		Camera::cameraPosition.y = -1.3f;
+	}
+
 	// Initialize cubes
 	playerCube->InitializeGameObject();
 
@@ -71,32 +76,23 @@ void Game::InitializeGame()
 
 void Game::UpdateGame(float deltaTime_)
 {
-	if (!playerCube->isPlayerGrounded && !playerFellOff)
-	{
-		Camera::cameraPosition.y -= deltaTime_;
-	}
 
-	else if (playerCube->isPlayerGrounded && !playerFellOff)
-	{
-		playerCube->position.y += 0.0f;
-	}
-
-	cout << playerCube->position.y << endl;
+	cout << playerCube->position.x << ", " << playerCube->position.y << ", " << playerCube->position.z << endl;
 
 	if (playerCube->position.y <= -3.0f)
 	{
+		playerCube->position = Camera::cameraPosition + Camera::cameraFront;
+
 		playerFellOff = true;
 	}
 
 	if (!playerFellOff)
 	{
-		// Move the player's cube with the camera
 		playerCube->position = Camera::cameraPosition + Camera::cameraFront;
 	}
 
 	else
 	{
-		playerCube->position = vec3(0.0f, 0.0f, 2.0f);
 		Camera::cameraPosition = vec3(0.0f, 0.0f, 2.0f);
 		playerFellOff = false;
 	}
@@ -127,6 +123,37 @@ void Game::UpdateGame(float deltaTime_)
 			1.0f * deltaTime_;
 	}
 
+	if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS && playerCube->isPlayerGrounded &&
+		jumping == false)
+	{
+		playerCube->isPlayerGrounded = false;
+		jumping = true;
+	}
+
+	if (!playerCube->isPlayerGrounded && !playerFellOff && !jumping)
+	{
+		Camera::cameraPosition.y -= deltaTime_;
+	}
+
+	else if (playerCube->isPlayerGrounded && !playerFellOff && !jumping)
+	{
+		Camera::cameraPosition.y += 0.0f;
+	}
+
+	if (!playerCube->isPlayerGrounded && jumping)
+	{
+		float jumpHeight = 0.4f;
+		float incrementJump = deltaTime_;
+
+		// Move the camera up during the jump
+		Camera::cameraPosition.y += incrementJump;
+
+		// If the camera position's exceeds jump height, fall back down
+		if (Camera::cameraPosition.y >= jumpHeight)
+		{
+			jumping = false;
+		}
+	}
 
 	for (int i = 0; i < groundPlanes.size(); i++)
 	{
@@ -195,12 +222,12 @@ void Game::DeleteGameInstance()
 
 void Game::PlayerGroundCollision(GamePlayer& player, GameGround& ground)
 {
-	if (player.position.x >= ground.position.x &&
-		player.position.x <= ground.position.x + ground.size.x &&
+	if (player.position.x >= -2.35f &&
+		player.position.x <= 2.35 &&
 		player.position.y >= ground.position.y &&
-		player.position.y <= ground.position.y + ground.size.y + 0.2f &&
-		player.position.z >= ground.position.z &&
-		player.position.z <= ground.position.z + ground.size.z)
+		player.position.y <= ground.position.y + ground.size.y + 0.1f &&
+		player.position.z >= -2.3f &&
+		player.position.z <= 2.3f)
 	{
 		player.isPlayerGrounded = true;
 	}

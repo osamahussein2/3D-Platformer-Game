@@ -31,6 +31,7 @@ private:
 	bool playerShaderSet, groundPlanesShaderSet;
 
 	bool playerFellOff = false;
+	bool jumping = false;
 };
 
 #endif*/ //
