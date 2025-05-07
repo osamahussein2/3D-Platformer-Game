@@ -76,8 +76,7 @@ void Game::InitializeGame()
 
 void Game::UpdateGame(float deltaTime_)
 {
-
-	cout << playerCube->position.x << ", " << playerCube->position.y << ", " << playerCube->position.z << endl;
+	//cout << playerCube->position.x << ", " << playerCube->position.y << ", " << playerCube->position.z << endl;
 
 	if (playerCube->position.y <= -3.0f)
 	{
@@ -154,12 +153,9 @@ void Game::UpdateGame(float deltaTime_)
 			jumping = false;
 		}
 	}
-
-	for (int i = 0; i < groundPlanes.size(); i++)
-	{
-		// Update player's collision with the ground once detected
-		PlayerGroundCollision(*playerCube, *groundPlanes[i]);
-	}
+	
+	// Update player's collision with the ground once detected
+	PlayerGroundCollision(*playerCube);
 }
 
 void Game::RenderGame(float deltaTime)
@@ -220,19 +216,27 @@ void Game::DeleteGameInstance()
 	}
 }
 
-void Game::PlayerGroundCollision(GamePlayer& player, GameGround& ground)
+void Game::PlayerGroundCollision(GamePlayer& player)
 {
-	if (player.position.x >= -2.35f &&
-		player.position.x <= 2.35 &&
-		player.position.y >= ground.position.y &&
-		player.position.y <= ground.position.y + ground.size.y + 0.1f &&
-		player.position.z >= -2.3f &&
-		player.position.z <= 2.3f)
+	// First ground collision detection with the player
+	if (player.position.x >= groundPlanes[0]->position.x - 2.65f &&
+		player.position.x <= groundPlanes[0]->position.x + 2.65f &&
+		player.position.y >= groundPlanes[0]->position.y - groundPlanes[0]->size.y - 0.1f &&
+		player.position.y <= groundPlanes[0]->position.y + groundPlanes[0]->size.y + 0.1f &&
+		player.position.z >= groundPlanes[0]->position.z - 2.58f &&
+		player.position.z <= groundPlanes[0]->position.z + 2.58f && !jumping && !player.isPlayerGrounded)
 	{
 		player.isPlayerGrounded = true;
 	}
 
-	else
+	/* Make sure to detect the player being greater than the ground's position on any axes to set the is player grounded
+	to false so that the player can fall down */
+	else if (player.position.x < groundPlanes[0]->position.x - 2.65f ||
+		player.position.x > groundPlanes[0]->position.x + 2.65f ||
+		player.position.y < groundPlanes[0]->position.y - groundPlanes[0]->size.y - 0.1f ||
+		player.position.y > groundPlanes[0]->position.y + groundPlanes[0]->size.y + 0.1f ||
+		player.position.z < groundPlanes[0]->position.z - 2.58f ||
+		player.position.z > groundPlanes[0]->position.z + 2.58f)
 	{
 		player.isPlayerGrounded = false;
 	}

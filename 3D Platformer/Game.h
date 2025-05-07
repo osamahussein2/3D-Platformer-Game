@@ -21,7 +21,7 @@ public:
 private:
 	Game();
 
-	void PlayerGroundCollision(GamePlayer& player, GameGround& ground);
+	void PlayerGroundCollision(GamePlayer& player);
 
 	static Game* gameInstance;
 
