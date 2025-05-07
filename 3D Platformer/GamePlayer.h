@@ -5,8 +5,8 @@
 class GamePlayer : public GameObject
 {
 public:
-	GamePlayer() {}
-	GamePlayer(glm::vec3 position_, glm::vec3 size_);
+	GamePlayer() : position(vec3(0.0f)), velocity(vec3(0.0f)), size(vec3(0.0f)) {}
+	GamePlayer(glm::vec3 position_, glm::vec3 velocity_, glm::vec3 size_);
 
 	~GamePlayer();
 
@@ -14,7 +14,7 @@ public:
 	virtual void InitializeGameObjectTextures(const char* file_);
 	virtual void DrawGameObject();
 
-	glm::vec3 position, size;
+	glm::vec3 position, size, velocity;
 
 	Shader shader;
 

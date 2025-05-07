@@ -5,7 +5,8 @@
 #include <iostream>
 #include "Camera.h"
 
-GamePlayer::GamePlayer(glm::vec3 position_, glm::vec3 size_) : position(position_), size(size_)
+GamePlayer::GamePlayer(glm::vec3 position_, glm::vec3 velocity_, glm::vec3 size_) : position(position_), size(size_),
+velocity(velocity_)
 {
 }
 
@@ -145,6 +146,8 @@ void GamePlayer::DrawGameObject()
 
 	glm::mat4 viewMatrix = glm::lookAt(Camera::cameraPosition, Camera::cameraPosition + Camera::cameraFront,
 		Camera::cameraUp);
+
+	//viewMatrix = glm::rotate(viewMatrix, glm::radians(1.0f), glm::vec3(Camera::pitch, Camera::yaw, 0.0f));
 
 	glUniformMatrix4fv(glGetUniformLocation(shader.shaderProgram, "viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
 

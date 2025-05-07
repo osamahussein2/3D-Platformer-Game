@@ -21,7 +21,9 @@ public:
 private:
 	Game();
 
-	void PlayerGroundCollision(GamePlayer& player);
+	bool PlayerGroundCollision(GamePlayer& player, GameGround& ground);
+
+	void ModifyJumpHeight();
 
 	static Game* gameInstance;
 
@@ -30,8 +32,9 @@ private:
 
 	bool playerShaderSet, groundPlanesShaderSet;
 
-	bool playerFellOff = false;
 	bool jumping = false;
+
+	float jumpHeight = 0.0f;
 };
 
 #endif*/ //
