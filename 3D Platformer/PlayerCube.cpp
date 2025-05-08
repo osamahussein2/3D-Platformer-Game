@@ -139,13 +139,16 @@ void PlayerCube::DrawMainMenuObject()
 
 	glUniform1i(glGetUniformLocation(shader.shaderProgram, "textureImage"), 0);
 
-	glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), float(800 / 600), 0.1f, 100.0f);
+	glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), float(1200 / 900), 0.1f, 100.0f);
 
 	glUniformMatrix4fv(glGetUniformLocation(shader.shaderProgram, "projectionMatrix"), 1, GL_FALSE,
 		glm::value_ptr(projectionMatrix));
 
-	glm::mat4 viewMatrix = glm::lookAt(Camera::cameraPosition, Camera::cameraPosition + Camera::cameraFront, 
+	glm::mat4 viewMatrix = glm::lookAt(Camera::cameraPosition, Camera::cameraPosition + Camera::cameraFront,
 		Camera::cameraUp);
+
+	//viewMatrix = glm::rotate(viewMatrix, glm::radians(Camera::pitch), glm::vec3(1.0f, 0.0f, 0.0f));
+	//viewMatrix = glm::rotate(viewMatrix, glm::radians(Camera::yaw), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	glUniformMatrix4fv(glGetUniformLocation(shader.shaderProgram, "viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
 

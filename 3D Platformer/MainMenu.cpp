@@ -48,11 +48,6 @@ void MainMenu::InitializeMenu()
 	// Initialize cubes
 	playerCube->InitializeMainMenuObject();
 
-	if (playerCharacter == NULL)
-	{
-		playerCharacter = dubaiPlayer1;
-	}
-
 	switchedCharacter = false;
 
 	if (playerCharacter == dubaiPlayer1) playerCube->InitializeMainMenuObjectTextures("Textures/Dubai1.jpeg");
@@ -231,7 +226,7 @@ void MainMenu::PlayerCubeCollision()
 			switchedCharacter = true;
 		}
 
-		std::cout << "Collided with door!" << endl;
+		//std::cout << "Collided with door!" << endl;
 	}
 
 	else
@@ -242,11 +237,11 @@ void MainMenu::PlayerCubeCollision()
 
 bool MainMenu::CheckForDoorCollision(PlayerCube& player, House& door_)
 {
-	if (player.position.x >= door_.position.x &&
+	if (player.position.x >= door_.position.x - door_.size.x &&
 		player.position.x <= door_.position.x + door_.size.x &&
-		player.position.y >= door_.position.y &&
+		player.position.y >= door_.position.y - door_.size.y &&
 		player.position.y <= door_.position.y + door_.size.y &&
-		player.position.z >= door_.position.z &&
+		player.position.z >= door_.position.z - door_.size.z &&
 		player.position.z <= door_.position.z + door_.size.z)
 	{
 		return true;

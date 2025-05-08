@@ -39,15 +39,10 @@ Game* Game::Instance()
 void Game::InitializeGame()
 {
 	// Initialize main menu camera
-	Camera::cameraPosition = glm::vec3(0.0f, 0.0f, 3.0f);
+	Camera::cameraPosition = glm::vec3(0.0f, 0.0f, 2.0f);
 
-	Camera::cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+	Camera::cameraFront = glm::vec3(0.0f, 0.5f, -1.0f);
 	Camera::cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
-	if (Camera::cameraPosition.y <= -1.3f)
-	{
-		Camera::cameraPosition.y = -1.3f;
-	}
 
 	// Initialize cubes
 	playerCube->InitializeGameObject();
@@ -66,6 +61,16 @@ void Game::InitializeGame()
 
 	// Initialize ground planes for the game
 	groundPlanes[0]->InitializeGameObject();
+
+	if (MainMenu::Instance()->playerCharacter == dubaiPlayer1)
+	{
+		groundPlanes[0]->InitializeGameObjectTextures("Textures/Dubai1.jpeg");
+	}
+
+	else if (MainMenu::Instance()->playerCharacter == dubaiPlayer2)
+	{
+		groundPlanes[0]->InitializeGameObjectTextures("Textures/Dubai2.jpeg");
+	}
 
 	// Don't set the shaders yet
 	playerShaderSet = false;
@@ -128,6 +133,14 @@ void Game::UpdateGame(float deltaTime_)
 	else if (playerCube->isPlayerGrounded && !jumping)
 	{
 		Camera::cameraPosition.y += 0.0f;
+
+		// If player's cube y position is less than the first ground platform y position
+		if (playerCube->position.y <= -1.3f)
+		{
+			// Don't move the camera
+			Camera::cameraPosition.y = -1.1f;
+			playerCube->position.y = -1.3f;
+		}
 	}
 
 	/* Modify the player's jump height depending on which ground the player collided with to make sure

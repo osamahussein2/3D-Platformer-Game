@@ -7,8 +7,8 @@ float lastFrame = 0.0f;
 
 Window* Window::windowInstance = nullptr;
 
-float Window::lastPositionX = 0;
-float Window::lastPositionY = 0;
+float Window::lastPositionX = 600;
+float Window::lastPositionY = 450;
 
 // Initialize the first time mouse input to true since the mouse cursor will be immediately focused in OpenGL window
 extern bool firstTimeMouseReceivesInput = true;

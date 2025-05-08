@@ -21,7 +21,7 @@ public:
 	virtual void UpdateMenu(float deltaTime_);
 	virtual void RenderMenu();
 
-	Characters playerCharacter;
+	Characters playerCharacter = dubaiPlayer1;
 
 private:
 	MainMenu();

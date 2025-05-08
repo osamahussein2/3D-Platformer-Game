@@ -139,15 +139,13 @@ void GamePlayer::DrawGameObject()
 
 	glUniform1i(glGetUniformLocation(shader.shaderProgram, "textureImage"), 0);
 
-	glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), float(800 / 600), 0.1f, 100.0f);
+	glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), float(1200 / 900), 0.1f, 100.0f);
 
 	glUniformMatrix4fv(glGetUniformLocation(shader.shaderProgram, "projectionMatrix"), 1, GL_FALSE,
 		glm::value_ptr(projectionMatrix));
 
 	glm::mat4 viewMatrix = glm::lookAt(Camera::cameraPosition, Camera::cameraPosition + Camera::cameraFront,
 		Camera::cameraUp);
-
-	//viewMatrix = glm::rotate(viewMatrix, glm::radians(1.0f), glm::vec3(Camera::pitch, Camera::yaw, 0.0f));
 
 	glUniformMatrix4fv(glGetUniformLocation(shader.shaderProgram, "viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
 

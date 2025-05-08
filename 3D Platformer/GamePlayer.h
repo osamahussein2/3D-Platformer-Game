@@ -18,7 +18,7 @@ public:
 
 	Shader shader;
 
-	bool isPlayerGrounded = false;;
+	bool isPlayerGrounded = false;
 
 private:
 	unsigned int cubeVAO, cubeVBO, cubeTexture;
