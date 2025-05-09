@@ -133,12 +133,14 @@ void Game::UpdateGame(float deltaTime_)
 	else if (playerCube->isPlayerGrounded && !jumping)
 	{
 		Camera::cameraPosition.y += 0.0f;
+		Camera::cameraFront.y += 0.0f;
 
 		// If player's cube y position is less than the first ground platform y position
 		if (playerCube->position.y <= -1.3f)
 		{
 			// Don't move the camera
-			Camera::cameraPosition.y = -1.1f;
+			Camera::cameraPosition.y += 0.0f;
+			Camera::cameraFront.y += 0.0f;
 			playerCube->position.y = -1.3f;
 		}
 	}
@@ -158,6 +160,11 @@ void Game::UpdateGame(float deltaTime_)
 		if (Camera::cameraPosition.y >= jumpHeight)
 		{
 			jumping = false;
+		}
+
+		else if (playerCube->position.y <= -1.3f)
+		{
+			playerCube->position.y = -1.3f;
 		}
 	}
 	
