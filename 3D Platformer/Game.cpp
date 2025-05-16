@@ -58,18 +58,22 @@ void Game::InitializeGame()
 	}
 
 	groundPlanes.push_back(new GameGround(vec3(0.0f, -1.5f, 0.06f), vec3(5.0f, 0.1f, 5.0f)));
+	groundPlanes.push_back(new GameGround(vec3(0.0f, -1.0f, -4.0f), vec3(2.0f, 0.1f, 2.0f)));
 
-	// Initialize ground planes for the game
-	groundPlanes[0]->InitializeGameObject();
-
-	if (MainMenu::Instance()->playerCharacter == dubaiPlayer1)
+	for (int i = 0; i < groundPlanes.size(); i++)
 	{
-		groundPlanes[0]->InitializeGameObjectTextures("Textures/Dubai1.jpeg");
-	}
+		// Initialize ground planes for the game
+		groundPlanes[i]->InitializeGameObject();
 
-	else if (MainMenu::Instance()->playerCharacter == dubaiPlayer2)
-	{
-		groundPlanes[0]->InitializeGameObjectTextures("Textures/Dubai2.jpeg");
+		if (MainMenu::Instance()->playerCharacter == dubaiPlayer1)
+		{
+			groundPlanes[i]->InitializeGameObjectTextures("Textures/Dubai1.jpeg");
+		}
+
+		else if (MainMenu::Instance()->playerCharacter == dubaiPlayer2)
+		{
+			groundPlanes[i]->InitializeGameObjectTextures("Textures/Dubai2.jpeg");
+		}
 	}
 
 	// Don't set the shaders yet
@@ -84,12 +88,6 @@ void Game::UpdateGame(float deltaTime_)
 	//cout << playerCube->position.x << ", " << playerCube->position.y << ", " << playerCube->position.z << endl;
 
 	playerCube->position = Camera::cameraPosition + Camera::cameraFront;
-
-	// Respawn the player upon falling out of level bounds
-	if (Camera::cameraPosition.y <= -3.0f)
-	{
-		Camera::cameraPosition = vec3(0.0f, 0.0f, 2.0f);
-	}
 
 	// Detect input for player movement
 	if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_W) == GLFW_PRESS)
@@ -118,30 +116,50 @@ void Game::UpdateGame(float deltaTime_)
 			1.0f * deltaTime_;
 	}
 
-	if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS && playerCube->isPlayerGrounded &&
-		jumping == false)
+	if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS && 
+		PlayerGroundCollision(*playerCube, *groundPlanes[0]) && jumping == false)
 	{
-		playerCube->isPlayerGrounded = false;
+		//playerCube->isPlayerGrounded = false;
 		jumping = true;
 	}
 
-	if (!playerCube->isPlayerGrounded && !jumping)
+	else if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS &&
+		PlayerGroundCollision(*playerCube, *groundPlanes[1]) && jumping == false)
+	{
+		//playerCube->isPlayerGrounded = false;
+		jumping = true;
+	}
+
+	// Update the player's falling velocity when not landed on ground yet
+	if (!PlayerGroundCollision(*playerCube, *groundPlanes[0]) && !jumping)
 	{
 		Camera::cameraPosition.y -= deltaTime_;
 	}
 
-	else if (playerCube->isPlayerGrounded && !jumping)
+	// Update player's collision with the ground once detected
+	else if (PlayerGroundCollision(*playerCube, *groundPlanes[0]) && !jumping)
 	{
 		Camera::cameraPosition.y += 0.0f;
-		Camera::cameraFront.y += 0.0f;
 
 		// If player's cube y position is less than the first ground platform y position
 		if (playerCube->position.y <= -1.3f)
 		{
 			// Don't move the camera
-			Camera::cameraPosition.y += 0.0f;
-			Camera::cameraFront.y += 0.0f;
+			if (Camera::cameraPosition.y <= -1.1f) Camera::cameraPosition.y = -1.1f;
 			playerCube->position.y = -1.3f;
+		}
+	}
+
+	if (PlayerGroundCollision(*playerCube, *groundPlanes[1]) && !jumping)
+	{
+		Camera::cameraPosition.y += 0.0f;
+
+		// If player's cube y position is less than the second ground platform y position
+		if (playerCube->position.y <= -0.7f)
+		{
+			// Don't move the camera
+			if (Camera::cameraPosition.y <= -0.5f) Camera::cameraPosition.y = -0.5f;
+			playerCube->position.y = -0.7f;
 		}
 	}
 
@@ -149,29 +167,21 @@ void Game::UpdateGame(float deltaTime_)
 	their jump height is consistent with the rest of the platforms */
 	ModifyJumpHeight();
 
-	if (!playerCube->isPlayerGrounded && jumping)
-	{
-		float incrementJump = deltaTime_;
-
-		// Move the camera up during the jump
-		Camera::cameraPosition.y += incrementJump;
-
-		// If the camera position's exceeds jump height, fall back down
-		if (Camera::cameraPosition.y >= jumpHeight)
-		{
-			jumping = false;
-		}
-
-		else if (playerCube->position.y <= -1.3f)
-		{
-			playerCube->position.y = -1.3f;
-		}
-	}
-	
 	for (int i = 0; i < groundPlanes.size(); i++)
 	{
-		// Update player's collision with the ground once detected
-		PlayerGroundCollision(*playerCube, *groundPlanes[i]);
+		if (!PlayerGroundCollision(*playerCube, *groundPlanes[i]) && jumping)
+		{
+			float incrementJump = deltaTime_;
+
+			// Move the camera up during the jump
+			Camera::cameraPosition.y += incrementJump;
+
+			// If the camera position's exceeds jump height, fall back down
+			if (Camera::cameraPosition.y >= jumpHeight)
+			{
+				jumping = false;
+			}
+		}
 	}
 }
 
@@ -236,27 +246,27 @@ void Game::DeleteGameInstance()
 bool Game::PlayerGroundCollision(GamePlayer& player, GameGround& ground)
 {
 	// First ground collision detection with the player
-	if (player.position.x >= ground.position.x - (ground.size.x / 1.9f) &&
-		player.position.x <= ground.position.x + (ground.size.x / 1.9f) &&
+	if (player.position.x >= ground.position.x - ground.size.x / 1.9f &&
+		player.position.x <= ground.position.x + ground.size.x / 1.9f &&
 		player.position.y >= ground.position.y - ground.size.y - 0.1f &&
 		player.position.y <= ground.position.y + ground.size.y + 0.1f &&
-		player.position.z >= ground.position.z - (ground.size.z / 1.9f) &&
-		player.position.z <= ground.position.z + (ground.size.z / 1.9f) && !jumping && !player.isPlayerGrounded)
+		player.position.z >= ground.position.z - ground.size.z / 1.9f &&
+		player.position.z <= ground.position.z + ground.size.z / 1.9f && !jumping)
 	{
-		player.isPlayerGrounded = true;
+		//player.isPlayerGrounded = true;
 		return true;
 	}
 
 	/* Make sure to detect the player being greater than the ground's position on any axes to set the is player grounded
 	to false so that the player can fall down */
-	else if (player.position.x < ground.position.x - (ground.size.x / 1.9f) ||
-		player.position.x > ground.position.x + (ground.size.x / 1.9f) ||
+	else if (player.position.x < ground.position.x - ground.size.x / 1.9f ||
+		player.position.x > ground.position.x + ground.size.x / 1.9f ||
 		player.position.y < ground.position.y - ground.size.y - 0.1f ||
 		player.position.y > ground.position.y + ground.size.y + 0.1f ||
-		player.position.z < ground.position.z - (ground.size.z / 1.9f) ||
-		player.position.z > ground.position.z + (ground.size.z / 1.9f))
+		player.position.z < ground.position.z - ground.size.z / 1.9f ||
+		player.position.z > ground.position.z + ground.size.z / 1.9f)
 	{
-		player.isPlayerGrounded = false;
+		//player.isPlayerGrounded = false;
 		return false;
 	}
 
@@ -269,5 +279,23 @@ void Game::ModifyJumpHeight()
 	{
 		// First ground plane height is -1.5f
 		jumpHeight = 0.2f;
+	}
+
+	if (PlayerGroundCollision(*playerCube, *groundPlanes[1]))
+	{
+		// Second ground plane height is -1.0f
+		jumpHeight = 0.7f;
+	}
+
+	for (int i = 0; i < groundPlanes.size(); i++)
+	{
+		if (!PlayerGroundCollision(*playerCube, *groundPlanes[i]))
+		{
+			// Respawn the player upon falling out of level bounds
+			if (Camera::cameraPosition.y <= -3.0f)
+			{
+				Camera::cameraPosition = vec3(0.0f, 0.0f, 2.0f);
+			}
+		}
 	}
 }
