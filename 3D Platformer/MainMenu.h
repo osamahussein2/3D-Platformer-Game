@@ -1,13 +1,9 @@
 #include "Menu.h"
 #include "PlayerCube.h"
 #include "House.h"
+#include "CharactersEnum.h"
 
 #include <vector>
-
-enum Characters
-{
-	dubaiPlayer1, dubaiPlayer2
-};
 
 class MainMenu : public Menu
 {

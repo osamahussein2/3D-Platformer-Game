@@ -16,10 +16,12 @@ Game::~Game()
 	gameInstance = nullptr;
 
 	delete playerCube;
+	playerCube = nullptr;
 
 	for (int i = 0; i < groundPlanes.size(); i++)
 	{
 		delete groundPlanes[i];
+		groundPlanes[i] = nullptr;
 	}
 
 	groundPlanes.clear();
@@ -49,11 +51,13 @@ void Game::InitializeGame()
 
 	if (MainMenu::Instance()->playerCharacter == dubaiPlayer1)
 	{
+		lastSavedPlayerCharacter = dubaiPlayer1;
 		playerCube->InitializeGameObjectTextures("Textures/Dubai1.jpeg");
 	}
 
 	else if (MainMenu::Instance()->playerCharacter == dubaiPlayer2)
 	{
+		lastSavedPlayerCharacter = dubaiPlayer2;
 		playerCube->InitializeGameObjectTextures("Textures/Dubai2.jpeg");
 	}
 
@@ -114,6 +118,12 @@ void Game::UpdateGame(float deltaTime_)
 		// Move the camera right when D key is pressed
 		Camera::cameraPosition += glm::normalize(glm::cross(Camera::cameraFront, Camera::cameraUp)) *
 			1.0f * deltaTime_;
+	}
+
+	if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_ENTER) == GLFW_PRESS)
+	{
+		Window::Instance()->previousState = game;
+		Window::Instance()->currentState = mainMenu;
 	}
 
 	if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS && 

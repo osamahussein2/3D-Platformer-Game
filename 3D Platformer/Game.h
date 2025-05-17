@@ -4,6 +4,8 @@
 #include "GamePlayer.h"
 #include "GameGround.h"
 
+#include "CharactersEnum.h"
+
 #include <vector>
 
 class Game
@@ -17,6 +19,8 @@ public:
 	void InitializeGame();
 	void UpdateGame(float deltaTime_);
 	void RenderGame(float deltaTime_);
+
+	Characters lastSavedPlayerCharacter;
 
 private:
 	Game();

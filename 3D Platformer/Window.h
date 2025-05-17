@@ -29,9 +29,7 @@ public:
     // positionX and positionY represent as current mouse positions, along the x and y axes respectively
     static void MouseCallback(GLFWwindow* window, double positionX, double positionY);
 
-    GameState state;
-
-    bool areResourcesDeallocated;
+    GameState currentState, previousState;
 
 private:
     // Initialize the window's variables to be NULL first before we do anything with it

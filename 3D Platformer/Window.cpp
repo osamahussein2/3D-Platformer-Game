@@ -13,7 +13,7 @@ float Window::lastPositionY = 450;
 // Initialize the first time mouse input to true since the mouse cursor will be immediately focused in OpenGL window
 extern bool firstTimeMouseReceivesInput = true;
 
-Window::Window() : openGLwindow(NULL), areResourcesDeallocated(true), state(mainMenu)
+Window::Window() : openGLwindow(NULL), currentState(mainMenu), previousState(mainMenu)
 {
 }
 
@@ -76,14 +76,19 @@ void Window::UpdateWindow()
 
     glfwPollEvents(); // Waits for any input by the user and processes it in real-time
 
-    switch (state)
+    switch (currentState)
     {
     case mainMenu:
-        if (!areResourcesDeallocated)
+        if (Window::Instance()->previousState == game)
         {
+            MainMenu::Instance()->InitializeMenu();
+            Game::Instance()->~Game();
+
+            Window::Instance()->previousState = mainMenu;
+
             break;
         }
-        else if (areResourcesDeallocated)
+        else if (Window::Instance()->previousState == mainMenu)
         {
             MainMenu::Instance()->UpdateMenu(deltaTime);
             MainMenu::Instance()->RenderMenu();
@@ -92,15 +97,17 @@ void Window::UpdateWindow()
 
 
     case game:
-        if (!areResourcesDeallocated)
+        if (Window::Instance()->previousState == mainMenu)
         {
             Game::Instance()->InitializeGame();
             MainMenu::Instance()->~MainMenu();
 
-            areResourcesDeallocated = true;
+            Window::Instance()->previousState = game;
+
+            break;
         }
 
-        else if (areResourcesDeallocated)
+        else if (Window::Instance()->previousState == game)
         {
             Game::Instance()->UpdateGame(deltaTime);
             Game::Instance()->RenderGame(deltaTime);

@@ -1,5 +1,6 @@
 #include "MainMenu.h"
 #include "Camera.h"
+#include "Game.h"
 #include "ResourceManager.h"
 #include <iostream>
 #include "Window.h"
@@ -7,7 +8,7 @@
 MainMenu* MainMenu::mainMenuInstance = nullptr;
 
 MainMenu::MainMenu() : Menu(), playerCube(new PlayerCube(vec3(0.0f, 0.0f, 2.0f), vec3(0.3f))),
-houseCube(new House(vec3(0.0f, 0.0f, 2.5f), vec3(5.0f)))
+houseCube(new House(vec3(0.0f, 0.0f, 2.5f), vec3(5.0f))), switchedCharacter(false)
 {
 }
 
@@ -17,10 +18,16 @@ MainMenu::~MainMenu()
 
 	delete playerCube, houseCube;
 
+	playerCube = nullptr;
+	houseCube = nullptr;
+
 	for (int i = 0; i < doors.size(); i++)
 	{
 		delete doors[i];
+		doors[i] = nullptr;
 	}
+
+	doors.clear();
 }
 
 MainMenu* MainMenu::Instance()
@@ -48,10 +55,15 @@ void MainMenu::InitializeMenu()
 	// Initialize cubes
 	playerCube->InitializeMainMenuObject();
 
-	switchedCharacter = false;
+	if (playerCharacter == dubaiPlayer1 || Game::Instance()->lastSavedPlayerCharacter == dubaiPlayer1)
+	{
+		playerCube->InitializeMainMenuObjectTextures("Textures/Dubai1.jpeg");
+	}
 
-	if (playerCharacter == dubaiPlayer1) playerCube->InitializeMainMenuObjectTextures("Textures/Dubai1.jpeg");
-	else if (playerCharacter == dubaiPlayer2) playerCube->InitializeMainMenuObjectTextures("Textures/Dubai2.jpeg");
+	if (playerCharacter == dubaiPlayer2 || Game::Instance()->lastSavedPlayerCharacter == dubaiPlayer2)
+	{
+		playerCube->InitializeMainMenuObjectTextures("Textures/Dubai2.jpeg");
+	}
 
 	houseCube->InitializeMainMenuObject();
 	houseCube->InitializeMainMenuObjectTextures("Textures/DubaiHouse.png");
@@ -112,8 +124,6 @@ void MainMenu::UpdateMenu(float deltaTime_)
 		Camera::cameraPosition += glm::normalize(glm::cross(Camera::cameraFront, Camera::cameraUp)) *
 			1.0f * deltaTime_;
 	}
-
-	
 
 	// Update player's collisions once detected
 	PlayerCubeCollision();
@@ -195,8 +205,8 @@ void MainMenu::PlayerCubeCollision()
 	// If player collided with the play door
 	if (CheckForDoorCollision(*playerCube, *doors[0]))
 	{
-		Window::Instance()->areResourcesDeallocated = false;
-		Window::Instance()->state = game;
+		Window::Instance()->previousState = mainMenu;
+		Window::Instance()->currentState = game;
 	}
 
 	// If player collided with the quit door
@@ -208,13 +218,21 @@ void MainMenu::PlayerCubeCollision()
 	// If player collided with the switch characters door
 	if (CheckForDoorCollision(*playerCube, *doors[2]))
 	{
+		// If the player is controlling the first player and didn't switch character yet when pressing ENTER
 		if (playerCharacter == dubaiPlayer1 && switchedCharacter == false &&
 			glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_ENTER) == GLFW_PRESS)
 		{
-			playerCharacter = dubaiPlayer2;
+			playerCharacter = dubaiPlayer2; // Change the player character to the second one
 			playerCube->InitializeMainMenuObjectTextures("Textures/Dubai2.jpeg");
 
 			switchedCharacter = true;
+		}
+
+		// Otherwise, the player actually changed character and let go of ENTER, set switched character back to false
+		else if (playerCharacter == dubaiPlayer2 && switchedCharacter == true &&
+			glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_ENTER) == GLFW_RELEASE)
+		{
+			switchedCharacter = false;
 		}
 
 		if (playerCharacter == dubaiPlayer2 && switchedCharacter == false &&
@@ -226,12 +244,11 @@ void MainMenu::PlayerCubeCollision()
 			switchedCharacter = true;
 		}
 
-		//std::cout << "Collided with door!" << endl;
-	}
-
-	else
-	{
-		switchedCharacter = false;
+		else if (playerCharacter == dubaiPlayer1 && switchedCharacter == true &&
+			glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_ENTER) == GLFW_RELEASE)
+		{
+			switchedCharacter = false;
+		}
 	}
 }
 
